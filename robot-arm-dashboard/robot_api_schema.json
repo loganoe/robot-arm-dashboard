@@ -1,0 +1,217 @@
+{
+  "api_version": "1.0.0",
+  "protocol": "RESTful + WebSocket",
+  "base_url": "http://localhost:4523/api/v1",
+  "endpoints": {
+    "robot": {
+      "status": {
+        "method": "GET",
+        "path": "/robot/status",
+        "description": "Get current robot status",
+        "response": {
+          "status": "string",
+          "connection": "string",
+          "timestamp": "number"
+        }
+      },
+      "home": {
+        "method": "POST",
+        "path": "/robot/home",
+        "description": "Move robot to home position",
+        "response": {
+          "success": "boolean",
+          "message": "string",
+          "timestamp": "number"
+        }
+      },
+      "reset": {
+        "method": "POST",
+        "path": "/robot/reset",
+        "description": "Reset robot controller",
+        "response": {
+          "success": "boolean",
+          "message": "string",
+          "timestamp": "number"
+        }
+      }
+    },
+    "joints": {
+      "control": {
+        "method": "POST",
+        "path": "/joints/control",
+        "description": "Control individual joints",
+        "body": {
+          "joint": "string",
+          "value": "number",
+          "unit": "string"
+        },
+        "response": {
+          "success": "boolean",
+          "joint": "string",
+          "value": "number",
+          "timestamp": "number"
+        }
+      },
+      "multi_control": {
+        "method": "POST",
+        "path": "/joints/multi-control",
+        "description": "Control multiple joints at once",
+        "body": {
+          "joints": [
+            {
+              "name": "string",
+              "value": "number",
+              "unit": "string"
+            }
+          ]
+        },
+        "response": {
+          "success": "boolean",
+          "joints": [
+            {
+              "name": "string",
+              "value": "number",
+              "timestamp": "number"
+            }
+          ]
+        }
+      },
+      "get_all": {
+        "method": "GET",
+        "path": "/joints/all",
+        "description": "Get current joint positions",
+        "response": {
+          "joints": [
+            {
+              "name": "string",
+              "value": "number",
+              "unit": "string"
+            }
+          ],
+          "timestamp": "number"
+        }
+      }
+    },
+    "settings": {
+      "speed": {
+        "method": "POST",
+        "path": "/settings/speed",
+        "description": "Set robot speed",
+        "body": {
+          "speed": "number",
+          "unit": "string"
+        },
+        "response": {
+          "success": "boolean",
+          "speed": "number",
+          "timestamp": "number"
+        }
+      },
+      "torque": {
+        "method": "POST",
+        "path": "/settings/torque",
+        "description": "Set robot torque",
+        "body": {
+          "torque": "number",
+          "unit": "string"
+        },
+        "response": {
+          "success": "boolean",
+          "torque": "number",
+          "timestamp": "number"
+        }
+      }
+    }
+  },
+  "websocket_events": {
+    "connection": {
+      "type": "connect",
+      "description": "Client connected to WebSocket",
+      "payload": {
+        "client_id": "string",
+        "timestamp": "number"
+      }
+    },
+    "disconnection": {
+      "type": "disconnect",
+      "description": "Client disconnected from WebSocket",
+      "payload": {
+        "client_id": "string",
+        "timestamp": "number"
+      }
+    },
+    "status_update": {
+      "type": "status_update",
+      "description": "Robot status changed",
+      "payload": {
+        "status": "string",
+        "connection": "string",
+        "timestamp": "number"
+      }
+    },
+    "joint_update": {
+      "type": "joint_update",
+      "description": "Joint position changed",
+      "payload": {
+        "joint": "string",
+        "value": "number",
+        "unit": "string",
+        "timestamp": "number"
+      }
+    },
+    "command_response": {
+      "type": "command_response",
+      "description": "Response to a command",
+      "payload": {
+        "command": "string",
+        "success": "boolean",
+        "message": "string",
+        "timestamp": "number"
+      }
+    }
+  },
+  "error_codes": {
+    "400": {
+      "code": "INVALID_REQUEST",
+      "description": "Bad request - invalid parameters"
+    },
+    "401": {
+      "code": "UNAUTHORIZED",
+      "description": "Authentication required"
+    },
+    "404": {
+      "code": "NOT_FOUND",
+      "description": "Resource not found"
+    },
+    "500": {
+      "code": "INTERNAL_ERROR",
+      "description": "Internal server error"
+    },
+    "503": {
+      "code": "ROBOT_OFFLINE",
+      "description": "Robot is offline or unreachable"
+    }
+  },
+  "validation": {
+    "joint_names": ["base", "shoulder", "elbow", "wrist", "gripper"],
+    "joint_units": ["deg", "%"],
+    "value_ranges": {
+      "base": {"min": -180, "max": 180},
+      "shoulder": {"min": -90, "max": 90},
+      "elbow": {"min": -135, "max": 135},
+      "wrist": {"min": -90, "max": 90},
+      "gripper": {"min": 0, "max": 100},
+      "speed": {"min": 10, "max": 100},
+      "torque": {"min": 10, "max": 100}
+    },
+    "required_headers": {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer <token>"
+    }
+  },
+  "timing": {
+    "command_timeout_ms": 5000,
+    "websocket_ping_interval_ms": 30000,
+    "status_update_interval_ms": 1000
+  }
+}
